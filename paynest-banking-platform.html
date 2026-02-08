@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayNest - Smart Digital Banking Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --white: #ffffff;
+            --purple: #8b5cf6;
+            --blue: #3b82f6;
+            --cyan: #06b6d4;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-4: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --shadow: 0 10px 40px rgba(99, 102, 241, 0.1);
+            --shadow-lg: 0 20px 60px rgba(99, 102, 241, 0.15);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        #root {
+            min-height: 100vh;
+        }
+
+        /* Animated Background */
+        .animated-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(45deg, #f8fafc 0%, #e0e7ff 50%, #fce7f3 100%);
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .animated-background::before {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+            top: -100px;
+            left: -100px;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .animated-background::after {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+            bottom: -150px;
+            right: -150px;
+            animation: float 25s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(100px, -100px) rotate(120deg); }
+            66% { transform: translate(-50px, 50px) rotate(240deg); }
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 30px rgba(99, 102, 241, 0.08);
+            padding: 1rem 5%;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        .navbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .nav-link.active {
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--gradient-4);
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-icon {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            padding: 0.75rem;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-icon:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            padding: 100px 5% 80px;
+            background: var(--gradient-primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+            top: -200px;
+            right: -200px;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }
+
+        .hero-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content h1 {
+            font-size: 4rem;
+            color: white;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-content p {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2.5rem;
+            line-height: 1.8;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .hero-visual {
+            position: relative;
+        }
+
+        .hero-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 2.5rem;
+            border-radius: 25px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
+            animation: cardFloat 6s ease-in-out infinite;
+        }
+
+        @keyframes cardFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-25px) rotate(2deg); }
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 3rem;
+            color: white;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+        }
+
+        /* Service Cards */
+        .services-section {
+            padding: 100px 5%;
+            background: white;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 3rem;
+            font-weight: 900;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: #64748b;
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .service-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-primary);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .service-card:hover {
+            transform: translateY(-15px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .service-card:hover::before {
+            opacity: 0.05;
+        }
+
+        .service-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .service-card h3 {
+            font-size: 1.6rem;
+            color: var(--dark);
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .service-card p {
+            color: #64748b;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+
+        /* Dashboard */
+        .dashboard {
+            padding: 120px 5% 80px;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .dashboard-header {
+            background: var(--gradient-primary);
+            padding: 3rem;
+            border-radius: 25px;
+            color: white;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-header::before {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            top: -100px;
+            right: -100px;
+        }
+
+        .balance-display {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin: 1rem 0;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .dashboard-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .dashboard-card h3 {
+            color: var(--primary);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            font-size: 1.4rem;
+        }
+
+        .quick-action {
+            background: var(--light);
+            padding: 1.2rem;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border: 2px solid transparent;
+        }
+
+        .quick-action:hover {
+            background: var(--gradient-primary);
+            color: white;
+            transform: translateX(8px);
+            border-color: var(--primary);
+        }
+
+        .quick-action-icon {
+            font-size: 2rem;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .quick-action:hover .quick-action-icon {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal {
+            background: white;
+            padding: 3rem;
+            border-radius: 25px;
+            max-width: 550px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 30px 100px rgba(99, 102, 241, 0.3);
+            animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-header h2 {
+            font-size: 2rem;
+            font-weight: 900;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #64748b;
+            transition: all 0.3s;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .close-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            transform: rotate(90deg);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: inherit;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: inherit;
+            background: white;
+            cursor: pointer;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Transaction List */
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem;
+            background: var(--light);
+            border-radius: 12px;
+            margin-bottom: 0.8rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .transaction-item:hover {
+            background: #e0e7ff;
+            transform: translateX(5px);
+        }
+
+        .transaction-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .transaction-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .transaction-amount {
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .amount-positive {
+            color: var(--success);
+        }
+
+        .amount-negative {
+            color: var(--danger);
+        }
+
+        /* Success Animation */
+        .success-animation {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .checkmark {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--gradient-4);
+            margin: 0 auto 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: white;
+            animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0) rotate(-180deg); }
+            to { transform: scale(1) rotate(0deg); }
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(99, 102, 241, 0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* OTP Input */
+        .otp-container {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        .otp-input {
+            width: 55px !important;
+            height: 55px;
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 800;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .otp-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+            transform: scale(1.05);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: white;
+            padding: 1.2rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.2);
+            z-index: 3000;
+            animation: slideInRight 0.5s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border-left: 4px solid var(--success);
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(400px); }
+            to { transform: translateX(0); }
+        }
+
+        .toast-icon {
+            font-size: 2rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 4rem 5% 2rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-section a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        .footer-section a:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .service-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Info Card */
+        .info-card {
+            background: linear-gradient(135deg, #e0e7ff 0%, #fce7f3 100%);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        .info-card p {
+            color: var(--dark);
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Account Card */
+        .account-card {
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .account-card:hover {
+            border-color: var(--primary);
+            background: white;
+            transform: translateY(-3px);
+        }
+
+        .account-card.active {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-background"></div>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // API Simulation
+        const API = {
+            processPayment: (data) => {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve({
+                            success: true,
+                            transactionId: `TXN${Date.now()}`,
+                            amount: data.amount,
+                            timestamp: new Date().toLocaleString()
+                        });
+                    }, 2000);
+                });
+            },
+            verifyOTP: (otp) => {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve({ success: true });
+                    }, 1500);
+                });
+            },
+            getUserData: () => {
+                return {
+                    name: 'Rajesh Kumar',
+                    balance: 124567.89,
+                    accountNumber: '1234567890',
+                    upiId: 'rajesh@paynest'
+                };
+            },
+            getTransactions: () => {
+                return [
+                    { id: 1, icon: '💳', name: 'Mobile Recharge', amount: -299, date: 'Today, 2:30 PM' },
+                    { id: 2, icon: '💡', name: 'Electricity Bill', amount: -1245, date: 'Today, 10:15 AM' },
+                    { id: 3, icon: '💰', name: 'Salary Credited', amount: +50000, date: 'Yesterday' },
+                    { id: 4, icon: '🏪', name: 'Shopping', amount: -3499, date: 'Yesterday' },
+                    { id: 5, icon: '📱', name: 'DTH Recharge', amount: -499, date: '2 days ago' }
+                ];
+            }
+        };
+
+        // Toast Component
+        function Toast({ message, onClose }) {
+            useEffect(() => {
+                const timer = setTimeout(onClose, 3000);
+                return () => clearTimeout(timer);
+            }, []);
+
+            return (
+                <div className="toast">
+                    <span className="toast-icon">✅</span>
+                    <div>
+                        <strong>Success!</strong>
+                        <p style={{margin: 0, fontSize: '0.9rem', color: '#64748b'}}>{message}</p>
+                    </div>
+                </div>
+            );
+        }
+
+        // Modal Component
+        function Modal({ children, onClose }) {
+            return (
+                <div className="modal-overlay" onClick={onClose}>
+                    <div className="modal" onClick={(e) => e.stopPropagation()}>
+                        {children}
+                    </div>
+                </div>
+            );
+        }
+
+        // Navbar Component
+        function Navbar({ currentPage, setCurrentPage, setShowModal }) {
+            return (
+                <nav className="navbar">
+                    <div className="navbar-container">
+                        <div className="logo" onClick={() => setCurrentPage('home')}>
+                            🏦 PayNest
+                        </div>
+                        <div className="nav-links">
+                            <span className={`nav-link ${currentPage === 'home' ? 'active' : ''}`} onClick={() => setCurrentPage('home')}>Home</span>
+                            <span className={`nav-link ${currentPage === 'services' ? 'active' : ''}`} onClick={() => setCurrentPage('services')}>Services</span>
+                            <span className={`nav-link ${currentPage === 'dashboard' ? 'active' : ''}`} onClick={() => setCurrentPage('dashboard')}>Dashboard</span>
+                            <span className={`nav-link ${currentPage === 'about' ? 'active' : ''}`} onClick={() => setCurrentPage('about')}>About</span>
+                        </div>
+                        <div style={{display: 'flex', gap: '1rem'}}>
+                            <button className="btn btn-secondary" onClick={() => setShowModal('login')}>Login</button>
+                            <button className="btn btn-primary" onClick={() => setShowModal('register')}>Get Started</button>
+                        </div>
+                    </div>
+                </nav>
+            );
+        }
+
+        // Hero Component
+        function Hero({ setShowModal, setCurrentPage }) {
+            return (
+                <section className="hero">
+                    <div className="hero-container">
+                        <div className="hero-content">
+                            <h1>Banking Made Simple & Secure</h1>
+                            <p>Experience the future of digital payments with PayNest. Instant transfers, bill payments, and complete financial control at your fingertips.</p>
+                            <div className="hero-buttons">
+                                <button className="btn btn-primary" style={{fontSize: '1.1rem', padding: '1rem 2.5rem'}} onClick={() => setShowModal('register')}>
+                                    Open Account Free
+                                </button>
+                                <button className="btn btn-secondary" style={{fontSize: '1.1rem', padding: '1rem 2.5rem', background: 'white', color: 'var(--primary)'}} onClick={() => setCurrentPage('services')}>
+                                    Explore Features
+                                </button>
+                            </div>
+                            <div className="stats">
+                                <div className="stat-card">
+                                    <h3>15M+</h3>
+                                    <p>Active Users</p>
+                                </div>
+                                <div className="stat-card">
+                                    <h3>₹800Cr+</h3>
+                                    <p>Daily Transactions</p>
+                                </div>
+                                <div className="stat-card">
+                                    <h3>100%</h3>
+                                    <p>Secure & Safe</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="hero-visual">
+                            <div className="hero-card">
+                                <div style={{width: '60px', height: '45px', background: 'linear-gradient(135deg, #FFD700, #FFA500)', borderRadius: '8px', marginBottom: '2rem'}}></div>
+                                <div style={{color: 'white', fontSize: '1.8rem', letterSpacing: '4px', marginBottom: '2rem', fontWeight: '700'}}>
+                                    5234  ••••  ••••  8976
+                                </div>
+                                <div style={{display: 'flex', justifyContent: 'space-between', color: 'white'}}>
+                                    <div>
+                                        <div style={{fontSize: '0.8rem', opacity: 0.7}}>CARD HOLDER</div>
+                                        <div style={{fontWeight: '700', fontSize: '1.1rem'}}>RAJESH KUMAR</div>
+                                    </div>
+                                    <div>
+                                        <div style={{fontSize: '0.8rem', opacity: 0.7}}>EXPIRES</div>
+                                        <div style={{fontWeight: '700', fontSize: '1.1rem'}}>12/28</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            );
+        }
+
+        // Services Component
+        function Services({ setShowModal, setTransactionType }) {
+            const services = [
+                { id: 'bill', icon: '💡', title: 'Bill Payments', desc: 'Pay electricity, water, gas, and all utility bills instantly', badge: 'INSTANT' },
+                { id: 'mobile', icon: '📱', title: 'Mobile Recharge', desc: 'Prepaid & postpaid recharge for all operators nationwide', badge: 'CASHBACK' },
+                { id: 'transfer', icon: '💸', title: 'Money Transfer', desc: 'Bank transfers via IMPS, NEFT, RTGS available 24x7', badge: '24x7' },
+                { id: 'dth', icon: '📺', title: 'DTH Recharge', desc: 'All DTH operators with plan recommendations', badge: 'POPULAR' },
+                { id: 'qr', icon: '📲', title: 'QR Payment', desc: 'Scan & pay at any merchant with instant settlement', badge: 'SECURE' },
+                { id: 'aeps', icon: '🏧', title: 'AEPS Services', desc: 'Aadhaar-based cash withdrawal and balance inquiry', badge: 'NEW' }
+            ];
+
+            const handleServiceClick = (serviceId) => {
+                setTransactionType(serviceId);
+                setShowModal('transaction');
+            };
+
+            return (
+                <section className="services-section">
+                    <div className="section-header">
+                        <h2 className="section-title">All Banking Services</h2>
+                        <p className="section-subtitle">Everything you need for seamless digital banking</p>
+                    </div>
+                    <div className="service-grid">
+                        {services.map(service => (
+                            <div key={service.id} className="service-card" onClick={() => handleServiceClick(service.id)}>
+                                <span className="service-icon">{service.icon}</span>
+                                <h3>{service.title}</h3>
+                                <p>{service.desc}</p>
+                                <span className="badge">{service.badge}</span>
+                                <button className="btn btn-primary" style={{width: '100%', marginTop: '1rem'}}>
+                                    Pay Now →
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            );
+        }
+
+        // Dashboard Component
+        function Dashboard({ setShowModal, setTransactionType }) {
+            const userData = API.getUserData();
+            const transactions = API.getTransactions();
+
+            const quickActions = [
+                { id: 'transfer', icon: '💸', title: 'Send Money', desc: 'Transfer to any bank' },
+                { id: 'mobile', icon: '📱', title: 'Mobile Recharge', desc: 'Prepaid & Postpaid' },
+                { id: 'bill', icon: '💡', title: 'Pay Bills', desc: 'All utility bills' },
+                { id: 'qr', icon: '📲', title: 'Scan QR', desc: 'Pay merchants' }
+            ];
+
+            const handleActionClick = (actionId) => {
+                setTransactionType(actionId);
+                setShowModal('transaction');
+            };
+
+            return (
+                <section className="dashboard">
+                    <div className="dashboard-container">
+                        <div className="dashboard-header">
+                            <h2>Welcome back, {userData.name}! 👋</h2>
+                            <div className="balance-display">₹{userData.balance.toLocaleString('en-IN')}</div>
+                            <p>Available Balance • Account: {userData.accountNumber}</p>
+                            <p style={{fontSize: '1.1rem', marginTop: '0.5rem'}}>UPI ID: {userData.upiId}</p>
+                        </div>
+
+                        <div className="dashboard-grid">
+                            <div className="dashboard-card">
+                                <h3>Quick Actions</h3>
+                                {quickActions.map(action => (
+                                    <div key={action.id} className="quick-action" onClick={() => handleActionClick(action.id)}>
+                                        <div className="quick-action-icon">{action.icon}</div>
+                                        <div>
+                                            <div style={{fontWeight: '700', fontSize: '1.1rem'}}>{action.title}</div>
+                                            <div style={{fontSize: '0.9rem', opacity: 0.7}}>{action.desc}</div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="dashboard-card">
+                                <h3>Recent Transactions</h3>
+                                {transactions.map(txn => (
+                                    <div key={txn.id} className="transaction-item">
+                                        <div className="transaction-info">
+                                            <div className="transaction-icon">{txn.icon}</div>
+                                            <div>
+                                                <div style={{fontWeight: '700'}}>{txn.name}</div>
+                                                <div style={{fontSize: '0.85rem', color: '#64748b'}}>{txn.date}</div>
+                                            </div>
+                                        </div>
+                                        <div className={`transaction-amount ${txn.amount > 0 ? 'amount-positive' : 'amount-negative'}`}>
+                                            {txn.amount > 0 ? '+' : ''}₹{Math.abs(txn.amount)}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="dashboard-card">
+                                <h3>Linked Bank Accounts</h3>
+                                <div className="account-card active">
+                                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                                        <div>
+                                            <div style={{fontWeight: '800', color: 'var(--primary)', fontSize: '1.1rem'}}>HDFC Bank</div>
+                                            <div style={{color: '#64748b', marginTop: '0.3rem'}}>••••  ••••  1234</div>
+                                        </div>
+                                        <span style={{background: 'var(--gradient-4)', color: 'white', padding: '0.3rem 1rem', borderRadius: '20px', fontSize: '0.85rem', fontWeight: '700'}}>PRIMARY</span>
+                                    </div>
+                                </div>
+                                <div className="account-card">
+                                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                                        <div>
+                                            <div style={{fontWeight: '800', color: 'var(--dark)', fontSize: '1.1rem'}}>ICICI Bank</div>
+                                            <div style={{color: '#64748b', marginTop: '0.3rem'}}>••••  ••••  5678</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button className="btn btn-secondary" style={{width: '100%', marginTop: '1rem'}}>
+                                    + Add New Account
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            );
+        }
+
+        // Transaction Form Component
+        function TransactionForm({ type, onSubmit }) {
+            const [formData, setFormData] = useState({});
+
+            const forms = {
+                bill: {
+                    title: 'Pay Electricity Bill',
+                    fields: [
+                        { name: 'provider', label: 'Electricity Provider', type: 'select', options: ['MSEB Maharashtra', 'Adani Electricity', 'BSES Delhi', 'CESC Kolkata'] },
+                        { name: 'consumerNumber', label: 'Consumer Number', type: 'text', placeholder: 'Enter consumer number' },
+                        { name: 'amount', label: 'Amount', type: 'number', placeholder: '₹ 0.00' }
+                    ]
+                },
+                mobile: {
+                    title: 'Mobile Recharge',
+                    fields: [
+                        { name: 'mobile', label: 'Mobile Number', type: 'tel', placeholder: '+91 98765 43210' },
+                        { name: 'operator', label: 'Operator', type: 'select', options: ['Airtel', 'Jio', 'Vi (Vodafone Idea)', 'BSNL'] },
+                        { name: 'plan', label: 'Select Plan', type: 'select', options: ['₹199 - 1.5GB/day, 28 days', '₹299 - 2GB/day, 28 days', '₹399 - 2.5GB/day, 28 days', '₹599 - 2GB/day, 84 days'] }
+                    ]
+                },
+                transfer: {
+                    title: 'Bank Transfer (IMPS)',
+                    fields: [
+                        { name: 'account', label: 'Beneficiary Account', type: 'text', placeholder: 'Account number' },
+                        { name: 'ifsc', label: 'IFSC Code', type: 'text', placeholder: 'HDFC0001234' },
+                        { name: 'name', label: 'Beneficiary Name', type: 'text', placeholder: 'Account holder name' },
+                        { name: 'amount', label: 'Amount to Transfer', type: 'number', placeholder: '₹ 0.00' },
+                        { name: 'remark', label: 'Remark (Optional)', type: 'text', placeholder: 'Payment for...' }
+                    ]
+                },
+                dth: {
+                    title: 'DTH Recharge',
+                    fields: [
+                        { name: 'operator', label: 'DTH Operator', type: 'select', options: ['Tata Play', 'Airtel Digital TV', 'Dish TV', 'Sun Direct'] },
+                        { name: 'subscriberId', label: 'Subscriber ID', type: 'text', placeholder: 'Enter subscriber ID' },
+                        { name: 'amount', label: 'Recharge Amount', type: 'number', placeholder: '₹ 0.00' }
+                    ]
+                },
+                qr: {
+                    title: 'Scan QR & Pay',
+                    fields: [
+                        { name: 'amount', label: 'Amount to Pay', type: 'number', placeholder: '₹ 0.00' }
+                    ]
+                },
+                aeps: {
+                    title: 'AEPS Cash Withdrawal',
+                    fields: [
+                        { name: 'aadhaar', label: 'Aadhaar Number', type: 'text', placeholder: 'XXXX XXXX XXXX', maxLength: 12 },
+                        { name: 'bank', label: 'Bank', type: 'select', options: ['State Bank of India', 'HDFC Bank', 'ICICI Bank', 'Axis Bank'] },
+                        { name: 'amount', label: 'Withdrawal Amount', type: 'select', options: ['₹500', '₹1,000', '₹2,000', '₹5,000'] }
+                    ]
+                }
+            };
+
+            const currentForm = forms[type];
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                onSubmit(formData);
+            };
+
+            return (
+                <form onSubmit={handleSubmit}>
+                    <div className="modal-header">
+                        <h2>{currentForm.title}</h2>
+                    </div>
+                    
+                    {type === 'qr' && (
+                        <div style={{textAlign: 'center', padding: '2rem 0'}}>
+                            <div style={{fontSize: '6rem', marginBottom: '1rem'}}>📷</div>
+                            <h3 style={{color: 'var(--primary)', marginBottom: '0.5rem'}}>QR Code Scanned!</h3>
+                            <p style={{color: '#64748b'}}>Merchant: ABC Electronics</p>
+                        </div>
+                    )}
+
+                    {type === 'aeps' && (
+                        <div className="info-card">
+                            <p style={{textAlign: 'center'}}>
+                                👆 Fingerprint scan required after form submission
+                            </p>
+                        </div>
+                    )}
+
+                    {currentForm.fields.map(field => (
+                        <div key={field.name} className="form-group">
+                            <label className="form-label">{field.label}</label>
+                            {field.type === 'select' ? (
+                                <select 
+                                    className="form-select" 
+                                    required
+                                    onChange={(e) => setFormData({...formData, [field.name]: e.target.value})}
+                                >
+                                    <option value="">Select {field.label}</option>
+                                    {field.options.map(opt => (
+                                        <option key={opt} value={opt}>{opt}</option>
+                                    ))}
+                                </select>
+                            ) : (
+                                <input 
+                                    type={field.type}
+                                    className="form-input"
+                                    placeholder={field.placeholder}
+                                    maxLength={field.maxLength}
+                                    required
+                                    onChange={(e) => setFormData({...formData, [field.name]: e.target.value})}
+                                />
+                            )}
+                        </div>
+                    ))}
+                    
+                    <button type="submit" className="btn btn-primary" style={{width: '100%', fontSize: '1.1rem', padding: '1rem'}}>
+                        Proceed to Pay →
+                    </button>
+                </form>
+            );
+        }
+
+        // OTP Verification Component
+        function OTPVerification({ onVerify }) {
+            const [otp, setOtp] = useState(['', '', '', '', '', '']);
+            const [loading, setLoading] = useState(false);
+
+            const handleChange = (index, value) => {
+                if (value.length <= 1) {
+                    const newOtp = [...otp];
+                    newOtp[index] = value;
+                    setOtp(newOtp);
+
+                    if (value && index < 5) {
+                        document.getElementById(`otp-${index + 1}`).focus();
+                    }
+                }
+            };
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                await API.verifyOTP(otp.join(''));
+                setLoading(false);
+                onVerify();
+            };
+
+            return (
+                <form onSubmit={handleSubmit}>
+                    <div className="modal-header">
+                        <h2>Verify Transaction</h2>
+                    </div>
+                    <p style={{textAlign: 'center', color: '#64748b', marginBottom: '2rem'}}>
+                        Enter OTP sent to your registered mobile number
+                    </p>
+                    <div className="otp-container">
+                        {otp.map((digit, index) => (
+                            <input
+                                key={index}
+                                id={`otp-${index}`}
+                                type="text"
+                                className="otp-input"
+                                maxLength="1"
+                                value={digit}
+                                onChange={(e) => handleChange(index, e.target.value)}
+                                required
+                            />
+                        ))}
+                    </div>
+                    <button type="submit" className="btn btn-primary" style={{width: '100%', fontSize: '1.1rem', padding: '1rem'}} disabled={loading}>
+                        {loading ? <div className="loading-spinner" style={{width: '25px', height: '25px', margin: '0 auto'}}></div> : 'Verify & Confirm'}
+                    </button>
+                    <p style={{textAlign: 'center', marginTop: '1rem', color: '#64748b', fontSize: '0.9rem'}}>
+                        Didn't receive? <a href="#" style={{color: 'var(--primary)', fontWeight: '600'}}>Resend OTP</a>
+                    </p>
+                </form>
+            );
+        }
+
+        // Success Component
+        function TransactionSuccess({ data, onClose }) {
+            return (
+                <div className="success-animation">
+                    <div className="checkmark">✓</div>
+                    <h2 style={{color: 'var(--success)', marginBottom: '1rem', fontSize: '2rem'}}>Transaction Successful!</h2>
+                    <p style={{color: '#64748b', marginBottom: '2rem'}}>Your payment has been processed successfully</p>
+                    
+                    <div style={{background: 'var(--light)', padding: '2rem', borderRadius: '15px', marginBottom: '2rem'}}>
+                        <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid #e2e8f0'}}>
+                            <span style={{color: '#64748b', fontWeight: '600'}}>Transaction ID:</span>
+                            <span style={{fontWeight: '800', color: 'var(--dark)'}}>{data.transactionId}</span>
+                        </div>
+                        <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid #e2e8f0'}}>
+                            <span style={{color: '#64748b', fontWeight: '600'}}>Amount:</span>
+                            <span style={{fontWeight: '800', color: 'var(--success)', fontSize: '1.3rem'}}>₹{data.amount}</span>
+                        </div>
+                        <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid #e2e8f0'}}>
+                            <span style={{color: '#64748b', fontWeight: '600'}}>Date & Time:</span>
+                            <span style={{fontWeight: '700'}}>{data.timestamp}</span>
+                        </div>
+                        <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                            <span style={{color: '#64748b', fontWeight: '600'}}>Status:</span>
+                            <span style={{fontWeight: '800', color: 'var(--success)'}}>✓ COMPLETED</span>
+                        </div>
+                    </div>
+                    
+                    <button className="btn btn-primary" onClick={onClose} style={{width: '100%', fontSize: '1.1rem', padding: '1rem'}}>
+                        Done
+                    </button>
+                    <button className="btn btn-secondary" style={{width: '100%', fontSize: '1rem', padding: '0.9rem', marginTop: '1rem'}}>
+                        Download Receipt
+                    </button>
+                </div>
+            );
+        }
+
+        // Main App Component
+        function App() {
+            const [currentPage, setCurrentPage] = useState('home');
+            const [showModal, setShowModal] = useState(null);
+            const [transactionType, setTransactionType] = useState(null);
+            const [transactionStep, setTransactionStep] = useState('form'); // form, otp, success
+            const [transactionData, setTransactionData] = useState(null);
+            const [toast, setToast] = useState(null);
+
+            const handleTransactionSubmit = async (formData) => {
+                setTransactionStep('otp');
+            };
+
+            const handleOTPVerify = async () => {
+                setTransactionStep('processing');
+                const result = await API.processPayment({
+                    amount: Math.floor(Math.random() * 5000) + 100
+                });
+                setTransactionData(result);
+                setTransactionStep('success');
+                setToast('Payment processed successfully!');
+            };
+
+            const closeModal = () => {
+                setShowModal(null);
+                setTransactionStep('form');
+                setTransactionData(null);
+            };
+
+            return (
+                <>
+                    <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} setShowModal={setShowModal} />
+                    
+                    {currentPage === 'home' && (
+                        <>
+                            <Hero setShowModal={setShowModal} setCurrentPage={setCurrentPage} />
+                            <Services setShowModal={setShowModal} setTransactionType={setTransactionType} />
+                        </>
+                    )}
+
+                    {currentPage === 'services' && (
+                        <div style={{marginTop: '80px'}}>
+                            <Services setShowModal={setShowModal} setTransactionType={setTransactionType} />
+                        </div>
+                    )}
+
+                    {currentPage === 'dashboard' && (
+                        <Dashboard setShowModal={setShowModal} setTransactionType={setTransactionType} />
+                    )}
+
+                    {currentPage === 'about' && (
+                        <div style={{marginTop: '80px', padding: '100px 5%', minHeight: '100vh'}}>
+                            <div style={{maxWidth: '1200px', margin: '0 auto', textAlign: 'center'}}>
+                                <h1 className="section-title" style={{fontSize: '4rem', marginBottom: '2rem'}}>About PayNest</h1>
+                                <p style={{fontSize: '1.4rem', color: '#64748b', maxWidth: '900px', margin: '0 auto 3rem', lineHeight: '2'}}>
+                                    PayNest is revolutionizing digital banking in India with cutting-edge technology, 
+                                    bank-grade security, and a customer-first approach. We're making financial services 
+                                    accessible, instant, and delightful for everyone.
+                                </p>
+                                <div className="service-grid" style={{marginTop: '4rem'}}>
+                                    <div className="service-card">
+                                        <span className="service-icon">🎯</span>
+                                        <h3>Innovation First</h3>
+                                        <p>Leveraging AI, blockchain, and cloud technology for next-gen banking</p>
+                                    </div>
+                                    <div className="service-card">
+                                        <span className="service-icon">🔒</span>
+                                        <h3>Security Focus</h3>
+                                        <p>256-bit encryption, 2FA, and real-time fraud detection</p>
+                                    </div>
+                                    <div className="service-card">
+                                        <span className="service-icon">⚡</span>
+                                        <h3>Lightning Fast</h3>
+                                        <p>Instant transactions with 99.9% uptime guarantee</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Modals */}
+                    {showModal === 'login' && (
+                        <Modal onClose={closeModal}>
+                            <div className="modal-header">
+                                <h2>Welcome Back</h2>
+                                <button className="close-btn" onClick={closeModal}>×</button>
+                            </div>
+                            <form onSubmit={(e) => {
+                                e.preventDefault();
+                                setToast('Login successful!');
+                                closeModal();
+                                setCurrentPage('dashboard');
+                            }}>
+                                <div className="form-group">
+                                    <label className="form-label">Username or Email</label>
+                                    <input type="text" className="form-input" placeholder="Enter username" required />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Password</label>
+                                    <input type="password" className="form-input" placeholder="Enter password" required />
+                                </div>
+                                <button type="submit" className="btn btn-primary" style={{width: '100%', fontSize: '1.1rem', padding: '1rem'}}>
+                                    Login Securely
+                                </button>
+                                <button type="button" className="btn btn-secondary" style={{width: '100%', marginTop: '1rem', fontSize: '1rem'}} onClick={() => setToast('Biometric login successful!')}>
+                                    👆 Login with Fingerprint
+                                </button>
+                            </form>
+                        </Modal>
+                    )}
+
+                    {showModal === 'register' && (
+                        <Modal onClose={closeModal}>
+                            <div className="modal-header">
+                                <h2>Create Account</h2>
+                                <button className="close-btn" onClick={closeModal}>×</button>
+                            </div>
+                            <form onSubmit={(e) => {
+                                e.preventDefault();
+                                setToast('Registration successful! Please login.');
+                                setShowModal('login');
+                            }}>
+                                <div className="form-group">
+                                    <label className="form-label">Full Name</label>
+                                    <input type="text" className="form-input" placeholder="John Doe" required />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Mobile Number</label>
+                                    <input type="tel" className="form-input" placeholder="+91 98765 43210" required />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Email</label>
+                                    <input type="email" className="form-input" placeholder="john@example.com" required />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Password</label>
+                                    <input type="password" className="form-input" placeholder="Create password" required />
+                                </div>
+                                <button type="submit" className="btn btn-primary" style={{width: '100%', fontSize: '1.1rem', padding: '1rem'}}>
+                                    Create Account
+                                </button>
+                            </form>
+                        </Modal>
+                    )}
+
+                    {showModal === 'transaction' && (
+                        <Modal onClose={closeModal}>
+                            {transactionStep === 'form' && (
+                                <>
+                                    <button className="close-btn" style={{position: 'absolute', right: '2rem', top: '2rem'}} onClick={closeModal}>×</button>
+                                    <TransactionForm type={transactionType} onSubmit={handleTransactionSubmit} />
+                                </>
+                            )}
+                            {transactionStep === 'otp' && (
+                                <>
+                                    <button className="close-btn" style={{position: 'absolute', right: '2rem', top: '2rem'}} onClick={closeModal}>×</button>
+                                    <OTPVerification onVerify={handleOTPVerify} />
+                                </>
+                            )}
+                            {transactionStep === 'processing' && (
+                                <div style={{textAlign: 'center', padding: '3rem'}}>
+                                    <div className="loading-spinner"></div>
+                                    <p style={{marginTop: '2rem', color: '#64748b', fontSize: '1.1rem'}}>Processing your payment...</p>
+                                </div>
+                            )}
+                            {transactionStep === 'success' && (
+                                <TransactionSuccess data={transactionData} onClose={closeModal} />
+                            )}
+                        </Modal>
+                    )}
+
+                    {/* Footer */}
+                    <footer className="footer">
+                        <div className="footer-content">
+                            <div className="footer-section">
+                                <h3>🏦 PayNest</h3>
+                                <p style={{color: 'rgba(255,255,255,0.7)', marginTop: '1rem'}}>
+                                    Smart digital banking for everyone. Fast, secure, and always available.
+                                </p>
+                            </div>
+                            <div className="footer-section">
+                                <h3>Quick Links</h3>
+                                <ul>
+                                    <li><a onClick={() => setCurrentPage('home')}>Home</a></li>
+                                    <li><a onClick={() => setCurrentPage('services')}>Services</a></li>
+                                    <li><a onClick={() => setCurrentPage('dashboard')}>Dashboard</a></li>
+                                    <li><a onClick={() => setCurrentPage('about')}>About Us</a></li>
+                                </ul>
+                            </div>
+                            <div className="footer-section">
+                                <h3>Services</h3>
+                                <ul>
+                                    <li><a>Bill Payments</a></li>
+                                    <li><a>Money Transfer</a></li>
+                                    <li><a>Mobile Recharge</a></li>
+                                    <li><a>AEPS Services</a></li>
+                                </ul>
+                            </div>
+                            <div className="footer-section">
+                                <h3>Legal</h3>
+                                <ul>
+                                    <li><a>Terms & Conditions</a></li>
+                                    <li><a>Privacy Policy</a></li>
+                                    <li><a>Security</a></li>
+                                    <li><a>Help Center</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div className="footer-bottom">
+                            <p>&copy; 2025 PayNest Banking. All rights reserved. Licensed by RBI.</p>
+                        </div>
+                    </footer>
+
+                    {/* Toast Notification */}
+                    {toast && <Toast message={toast} onClose={() => setToast(null)} />}
+                </>
+            );
+        }
+
+        // Render App
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
